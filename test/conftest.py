@@ -4,5 +4,5 @@ import pytest
 @pytest.fixture(autouse=True)
 def open_browser(page: Page):
     page.goto("https://www.litres.ru/")
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(4000)
     yield
