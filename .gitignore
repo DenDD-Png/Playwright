@@ -5,3 +5,7 @@ screenshot/
 .idea/
 __pycache__/
 *.pyc
+screenshots/*
+!screenshots/.gitkeep
+reports/*
+!reports/.gitkeep
