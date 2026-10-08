@@ -15,6 +15,10 @@ class HomePage(BasePage):
 
     #Actions
 
-    def search(self, query: str) -> None:
+    def search(self, query: str, submit_with_enter: bool = False) -> None:
         self.search_input.fill(query)
-        self.search_button.click()
+
+        if submit_with_enter:
+            self.page.keyboard.press("Enter")
+        else:
+            self.search_button.click()
