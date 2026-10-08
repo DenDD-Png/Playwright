@@ -1,4 +1,13 @@
 {
-  "empty_field_error": "Поле не может быть пустым",
-  "sample_email": "test_user@example.com"
+  "login_input": [
+    {
+      "id": "empty_email",
+      "email": "",
+      "expected_error": "Поле не может быть пустым"
+    },
+    {
+      "id": "sample_email",
+      "email": "test_user@example.com"
+    }
+  ]
 }

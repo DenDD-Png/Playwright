@@ -1,8 +1,26 @@
 {
-  "queries": ["python", "Игра Престолов", "Скамоучитель Python"],
-  "titled_query": {
-    "query": "Скамоучитель Python",
-    "title": "Результаты поиска по книгам: «Скамоучитель Python»"
-  },
-  "empty_search_suggestion": "александра маринина"
+  "search_input": [
+    {
+      "id": "python_books",
+      "query": "python",
+      "expected_results_count": 24
+    },
+    {
+      "id": "game_of_thrones",
+      "query": "Игра Престолов",
+      "expected_results_count": 24
+    },
+    {
+      "id": "self_teacher_python",
+      "query": "Скамоучитель Python",
+      "expected_results_count": 24,
+      "page_title": "Результаты поиска по книгам: «Скамоучитель Python»"
+    }
+  ],
+  "empty_search": [
+    {
+      "id": "popular_queries",
+      "suggestion": "александра маринина"
+    }
+  ]
 }

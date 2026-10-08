@@ -1,39 +1,34 @@
-import allure
 import pytest
 
-from data import load_json
-from pages.home_page import HomePage
-
-DATA = load_json("pages_data")
+from data import data_id, load_pages_data
+from pages.base_page import BASE_URL
 
 
-@allure.feature("Главная страница")
-class TestHome:
+@pytest.mark.smoke
+@pytest.mark.parametrize("td", load_pages_data(ids=["home"]), ids=data_id)
+def test_home_title(home, td):
+    home.should_have_title(td.title)
 
-    @allure.title("Заголовок главной страницы")
-    @pytest.mark.smoke
-    def test_home_title(self, home_page: HomePage):
-        home_page.should_have_title(DATA["home_title"])
+@pytest.mark.parametrize("td", load_pages_data(ids=["audiobooks"]), ids=data_id)
+def test_audiobooks_title(home, td):
+    home.open_audiobooks()
+    home.should_have_title(td.title)
 
-    @allure.title("Переход в «Аудиокниги»")
-    def test_audiobooks_title(self, home_page: HomePage):
-        home_page.open_audiobooks()
-        home_page.should_have_title(DATA["audiobooks_title"])
+@pytest.mark.parametrize("td", load_pages_data(ids=["start_here"]), ids=data_id)
+def test_logo_from_start_here(home, td):
+    home_data = load_pages_data(ids=["home"])[0]
+    home.open_start_here()
+    home.should_have_title(td.title)
+    home.click_logo()
+    home.should_have_url(BASE_URL + home_data.path)
 
-    @allure.title("Логотип со страницы «С чего начать» ведёт на главную")
-    def test_logo_from_start_here(self, home_page: HomePage):
-        home_page.open_start_here()
-        home_page.should_have_title(DATA["start_here_title"])
-        home_page.click_logo()
-        home_page.should_have_url(DATA["home_url"])
+@pytest.mark.parametrize("td", load_pages_data(ids=["promotions"]), ids=data_id)
+def test_logo_from_promotions(home, td):
+    home_data = load_pages_data(ids=["home"])[0]
+    home.open(td.path)
+    home.click_logo()
+    home.should_have_url(BASE_URL + home_data.path)
+    home.should_show_start_here_link()
 
-    @allure.title("Логотип со страницы акций ведёт на главную")
-    def test_logo_from_promotions(self, home_page: HomePage):
-        home_page.page.goto(DATA["promotions_path"])
-        home_page.click_logo()
-        home_page.should_have_url(DATA["home_url"])
-        home_page.should_show_start_here_link()
-
-    @allure.title("Иконка YouTube в подвале")
-    def test_youtube_icon(self, home_page: HomePage):
-        home_page.should_show_youtube_icon()
+def test_youtube_icon(home):
+    home.should_show_youtube_icon()

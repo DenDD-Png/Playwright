@@ -1,13 +1,13 @@
-import allure
-from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError, expect
+from pathlib import Path
 
-from config import SCREENSHOTS_DIR
+from playwright.sync_api import Page, expect
+
+BASE_URL = "https://www.litres.ru"
+SCREENSHOTS_DIR = Path(__file__).parent.parent / "screenshots"
 
 
 class BasePage:
     """Общие для всех страниц действия и элементы шапки сайта."""
-
-    path = "/"
 
     def __init__(self, page: Page):
         self.page = page
@@ -16,50 +16,32 @@ class BasePage:
         self.logo = page.get_by_alt_text("Логотип Литрес")
         self.cookie_accept_button = page.get_by_test_id("cookieAcceptPopup__accept")
 
-    def open(self):
-        with allure.step(f"Открыть страницу {self.path}"):
-            self.page.goto(self.path)
-            self.page.wait_for_load_state("load")
-        return self
+    #Actions
 
-    def search(self, query: str):
-        with allure.step(f"Найти «{query}» через кнопку «Найти»"):
-            self._submit_search(query, self.search_button.click)
+    def open(self, path: str = "/") -> None:
+        self.page.goto(BASE_URL + path)
 
-    def search_by_enter(self, query: str):
-        with allure.step(f"Найти «{query}» через Enter"):
-            self._submit_search(query, lambda: self.page.keyboard.press("Enter"))
+    def search(self, query: str, submit_with_enter: bool = False) -> None:
+        self.search_input.fill(query)
 
-    def _submit_search(self, query: str, submit, attempts: int = 3):
-        # Пока Next.js не закончил гидратацию, React сбрасывает введённый текст
-        # и поиск не уходит. Повторяем, пока не откроется страница результатов.
-        for attempt in range(attempts):
-            self.search_input.fill(query)
-            submit()
-            try:
-                self.page.wait_for_url("**/search/**", timeout=3000)
-                return
-            except PlaywrightTimeoutError:
-                if attempt == attempts - 1:
-                    raise
+        if submit_with_enter:
+            self.page.keyboard.press("Enter")
+        else:
+            self.search_button.click()
 
-    def click_logo(self):
-        with allure.step("Нажать на логотип Литрес"):
-            self.logo.click()
+    def click_logo(self) -> None:
+        self.logo.click()
 
-    def accept_cookies(self):
-        with allure.step("Принять куки"):
-            self.cookie_accept_button.click()
+    def accept_cookies(self) -> None:
+        self.cookie_accept_button.click()
 
-    def should_have_title(self, title: str):
-        with allure.step(f"Заголовок вкладки: «{title}»"):
-            expect(self.page).to_have_title(title)
+    def take_screenshot(self, name: str) -> None:
+        self.page.screenshot(path=str(SCREENSHOTS_DIR / f"{name}.png"))
 
-    def should_have_url(self, url: str):
-        with allure.step(f"URL страницы: {url}"):
-            expect(self.page).to_have_url(url)
+    #Checks
 
-    def take_screenshot(self, name: str):
-        path = SCREENSHOTS_DIR / f"{name}.png"
-        self.page.screenshot(path=str(path))
-        allure.attach.file(str(path), name=name, attachment_type=allure.attachment_type.PNG)
+    def should_have_title(self, title: str) -> None:
+        expect(self.page).to_have_title(title)
+
+    def should_have_url(self, url: str) -> None:
+        expect(self.page).to_have_url(url)

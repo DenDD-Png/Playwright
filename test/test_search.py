@@ -1,61 +1,53 @@
-import allure
 import pytest
 
-from data import load_json
-from pages.home_page import HomePage
-from pages.search_page import SearchPage
-
-DATA = load_json("search_data")
+from data import data_id, load_empty_search_data, load_pages_data, load_search_data
 
 
-@allure.feature("Поиск")
-class TestSearch:
+@pytest.mark.smoke
+@pytest.mark.parametrize("td", load_search_data(ids=["python_books", "game_of_thrones"]), ids=data_id)
+def test_search_by_button(home, result, td):
+    home.search(td.query)
+    result.should_be_opened(td.query)
+    result.should_show_results_for(td.query)
+    result.should_have_books_count(td.expected_results_count)
 
-    @allure.title("Поиск через кнопку «Найти»: {query}")
-    @pytest.mark.smoke
-    @pytest.mark.parametrize("query", DATA["queries"])
-    def test_search_by_button(self, search_page: SearchPage, query):
-        search_page.search(query)
-        search_page.should_be_opened_for(query)
-        search_page.should_show_results_for(query)
+@pytest.mark.parametrize("td", load_search_data(ids=["python_books", "game_of_thrones"]), ids=data_id)
+def test_search_by_enter(home, result, td):
+    home.search(td.query, submit_with_enter=True)
+    result.should_be_opened(td.query)
+    result.should_show_results_for(td.query)
+    result.should_have_books_count(td.expected_results_count)
 
-    @allure.title("Поиск через Enter: {query}")
-    @pytest.mark.parametrize("query", DATA["queries"])
-    def test_search_by_enter(self, search_page: SearchPage, query):
-        search_page.search_by_enter(query)
-        search_page.should_show_results_for(query)
+@pytest.mark.parametrize("td", load_search_data(ids=["self_teacher_python"]), ids=data_id)
+def test_search_page_title(home, result, td):
+    home.search(td.query)
+    result.should_show_results_for(td.query)
+    result.should_have_title(td.page_title)
 
-    @allure.title("Заголовок вкладки на странице результатов")
-    def test_search_page_title(self, search_page: SearchPage):
-        item = DATA["titled_query"]
-        search_page.search(item["query"])
-        search_page.should_show_results_for(item["query"])
-        search_page.should_have_title(item["title"])
+@pytest.mark.parametrize("td", load_empty_search_data(ids=["popular_queries"]), ids=data_id)
+def test_empty_search(home, result, td):
+    home.search("")
+    result.should_show_text(td.suggestion)
 
-    @allure.title("Пустой поиск показывает популярные запросы")
-    def test_empty_search(self, search_page: SearchPage):
-        search_page.search_button.click()
-        search_page.should_show_text(DATA["empty_search_suggestion"])
+@pytest.mark.parametrize("td", load_empty_search_data(ids=["popular_queries"]), ids=data_id)
+def test_empty_search_from_start_here(home, result, td):
+    start_here = load_pages_data(ids=["start_here"])[0]
+    home.open_start_here()
+    home.should_have_title(start_here.title)
+    home.search("")
+    result.should_show_text(td.suggestion)
 
-    @allure.title("Пустой поиск со страницы «С чего начать»")
-    def test_empty_search_from_start_here(self, home_page: HomePage):
-        home_page.open_start_here()
-        home_page.should_have_title(load_json("pages_data")["start_here_title"])
-        search_page = SearchPage(home_page.page)
-        search_page.search_button.click()
-        search_page.should_show_text(DATA["empty_search_suggestion"])
+@pytest.mark.parametrize("td", load_search_data(ids=["python_books"]), ids=data_id)
+def test_toggle_filter(home, result, td):
+    home.search(td.query)
+    result.should_be_opened(td.query)
+    result.toggle_first_filter()
+    result.take_screenshot("search_filter_toggled")
 
-    @allure.title("Переключение фильтра в результатах поиска")
-    def test_toggle_filter(self, search_page: SearchPage):
-        search_page.search("python")
-        search_page.should_be_opened_for("python")
-        search_page.toggle_first_filter()
-        search_page.take_screenshot("search_filter_toggled")
-
-    @allure.title("Фильтр по русскому языку")
-    def test_russian_language_filter(self, search_page: SearchPage):
-        search_page.search("python")
-        search_page.should_be_opened_for("python")
-        search_page.check_russian_language()
-        search_page.accept_cookies()
-        search_page.take_screenshot("search_russian_filter")
+@pytest.mark.parametrize("td", load_search_data(ids=["python_books", "game_of_thrones"]), ids=data_id)
+def test_russian_language_filter(home, result, td):
+    home.search(td.query, submit_with_enter=True)
+    result.should_be_opened(td.query)
+    result.should_have_books_count(td.expected_results_count)
+    result.apply_russian_filter()
+    result.should_show_russian_chip()

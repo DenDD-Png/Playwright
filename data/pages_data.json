@@ -1,7 +1,21 @@
 {
-  "home_url": "https://www.litres.ru/",
-  "home_title": "Литрес – сервис электронных и аудиокниг, скачать в fb2 и mp3, читать и слушать онлайн на Litres",
-  "start_here_title": "Рекомендации для вас- ищите на Литрес",
-  "audiobooks_title": "Аудиокниги – слушать онлайн или скачать в mp3 на Литрес",
-  "promotions_path": "/landing/PROMOTIONS2025/"
+  "pages": [
+    {
+      "id": "home",
+      "path": "/",
+      "title": "Литрес – сервис электронных и аудиокниг, скачать в fb2 и mp3, читать и слушать онлайн на Litres"
+    },
+    {
+      "id": "start_here",
+      "title": "Рекомендации для вас- ищите на Литрес"
+    },
+    {
+      "id": "audiobooks",
+      "title": "Аудиокниги – слушать онлайн или скачать в mp3 на Литрес"
+    },
+    {
+      "id": "promotions",
+      "path": "/landing/PROMOTIONS2025/"
+    }
+  ]
 }
