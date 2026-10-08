@@ -1,0 +1,25 @@
+{
+  "search_input": [
+    {
+      "id": "python_books",
+      "query": "Python",
+      "expected_results_count": 24,
+      "description": "Поиск книг по Python"
+    },{
+      "id": "game_of_thrones",
+      "query": "Игра Престолов",
+      "expected_results_count": 24,
+      "description": "Поиск книг по Игра Престолов"
+    },{
+      "id": "stephen_king",
+      "query": "Стивен Кинг",
+      "expected_results_count": 24,
+      "description": "Поиск книг по Стивен Кинг"
+    },{
+      "id": "richard_bransen",
+      "query": "Мои правила. Слушай, учись, смейся и будь лидером",
+      "expected_results_count": 3,
+      "description": "Поиск книг по Ричарда Бренсона"
+    }
+  ]
+}

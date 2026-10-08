@@ -1,6 +1,11 @@
 from playwright.sync_api import Page, expect
+import pytest
+from conftest import load_search_data
 
-def test_main_actions(home, result):
+
+@pytest.mark.parametrize("query", ["Python","Игра престолов","Стивен Кинг"])
+
+def test_main_actions(home, result, query):
     #page.get_by_placeholder("Искать на Литрес").fill("python")
     #page.get_by_role("button", name="Найти").click()
     #expect(page).to_have_url(f"https://www.litres.ru/search/?q={query}")
@@ -14,34 +19,11 @@ def test_main_actions(home, result):
     result.apply_russian_filter()
     expect(result.russian_chip).to_be_visible()
 
-
-def test_main_actions_with_dblclic(page: Page):
-    page.get_by_placeholder("Искать на Литрес").fill("python")
-    page.get_by_role("button", name="Найти").click()
-    expect(page).to_have_url("https://www.litres.ru/search/?q=python")
-    page.locator("xpath=(//div[@class='uik-toggle-KN8WZd'])[1]").dblclick()
-    page.wait_for_timeout(timeout=1500)
-    page.screenshot(path="screenshot/litresscren.png")
-    page.locator("xpath=//*[@aria-description='Книги, которые можно взять по Литрес: Абонементу']").click()
-    page.wait_for_timeout(timeout=1500)
-    page.screenshot(path="screenshot/litresscrendb.png")
-    page.pause()
-
-#В случае с литрес этот метод почему то не работает, но выдает успешный ответ
-def test_checkbox_litres(page: Page):
-    page.get_by_placeholder("Искать на Литрес").fill("python")
-    page.get_by_role("button", name="Найти").click()
-    expect(page).to_have_url("https://www.litres.ru/search/?q=python")
-    page.locator("xpath=//*[@id='languages-ru']")
-    page.pause()
-
-def test_page_check(page: Page):
-    page.get_by_placeholder("Искать на Литрес").fill("python")
-    page.get_by_role("button", name="Найти").click()
-    expect(page).to_have_url("https://www.litres.ru/search/?q=python")
-    page.check("label[for='languages-ru']")
-    # Закрывает всплывающие окно
-    page.locator("button:has-text('Принять')").click()
-    page.wait_for_timeout(timeout=1500)
-    page.screenshot(path="screenshot/litrescheck.png")
-
+@pytest.mark.parametrize("td", load_search_data(ids=["python_books","game_of_thrones"]))
+def test_main(home, result, td):
+    home.search(td.query, submit_with_enter=True)
+    result.should_be_opened(td.query)
+    expect(result.result_title).to_contain_text(td.query)
+    expect(result.books).to_have_count(td.expected_results_count, timeout=5000)
+    result.apply_russian_filter()
+    expect(result.russian_chip).to_be_visible()
