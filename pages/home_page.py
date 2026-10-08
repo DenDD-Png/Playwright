@@ -1,24 +1,11 @@
-from playwright.sync_api import Locator
+from playwright.sync_api import Page
 from pages.base_page import BasePage
+from pages.components.header import Header
 
 class HomePage(BasePage):
 
-    #Locators
-    @property
-    def search_input(self) -> Locator:
+    def __init__(self, page: Page):
+        super().__init__(page)
 
-        return self.page.get_by_placeholder("Искать на Литрес")
-
-    @property
-    def search_button(self) -> Locator:
-        return self.page.get_by_role("button", name="Найти")
-
-    #Actions
-
-    def search(self, query: str, submit_with_enter: bool = False) -> None:
-        self.search_input.fill(query)
-
-        if submit_with_enter:
-            self.page.keyboard.press("Enter")
-        else:
-            self.search_button.click()
+        #Components
+        self.header = Header(page)

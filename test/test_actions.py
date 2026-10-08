@@ -7,7 +7,7 @@ def test_main_actions(home, result):
     #books = page.get_by_test_id("art__wrapper")
     #page.check("label[for='languages-ru']")
     query = "Игра Престолов"
-    home.search(query, submit_with_enter=True)
+    home.header.search(query, submit_with_enter=True)
     result.should_be_opened(query)
     expect(result.result_title).to_contain_text(query)
     expect(result.books).to_have_count(24, timeout=5000)
