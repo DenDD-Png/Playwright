@@ -1,8 +1,12 @@
 from playwright.sync_api import Page, expect
 
-def test_main_actions(page: Page):
-    page.get_by_placeholder("Искать на Литрес").fill("python")
-    page.get_by_role("button", name="Найти").click()
+def test_main_actions(page,home):
+    #page.get_by_placeholder("Искать на Литрес").fill("python")
+    # page.get_by_role("button", name="Найти").click()
+
+    query = "python"
+    home.search(query)
+
     expect(page).to_have_url("https://www.litres.ru/search/?q=python")
     page.locator("xpath=(//div[@class='uik-toggle-KN8WZd'])[1]").click()
     page.wait_for_timeout(timeout=1500)
